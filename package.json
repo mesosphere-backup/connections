@@ -1,5 +1,5 @@
 {
-  "name": "connections",
+  "name": "@dcos/connections",
   "version": "0.1.0",
   "description": "Provides different connection types with a unified interface",
   "repository": "https://github.com/dcos-labs/connections",
