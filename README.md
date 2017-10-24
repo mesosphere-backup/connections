@@ -1,4 +1,4 @@
-# Connections
+# Connections [![Build Status](https://travis-ci.org/dcos-labs/connections.svg?branch=master)](https://travis-ci.org/dcos-labs/connections)
 
 This package provides different connection types with a unified interface.
 
