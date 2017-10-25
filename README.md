@@ -1,5 +1,12 @@
 # Connections [![Build Status](https://travis-ci.org/dcos-labs/connections.svg?branch=master)](https://travis-ci.org/dcos-labs/connections)
 
+---
+👩‍🔬  Please be aware that this package is still experimental —
+changes to the interface  and underlying implementation are likely,
+and future development or maintenance is not guaranteed.
+
+---
+
 This package provides different connection types with a unified interface.
 
 ## Example
