@@ -175,6 +175,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("load", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       if (this.status < 400) {
         window.setTimeout(() => {
@@ -197,6 +198,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("abort", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -208,6 +210,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("error", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -219,6 +222,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("timeout", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -231,6 +235,7 @@ export default class XHRConnection extends AbstractConnection {
     this.xhr.open(this.method, this.url);
     this.xhr.timeout = this.timeout;
     this.state = XHRConnection.OPEN;
+    this.opened = Date.now();
     window.setTimeout(() => {
       this.emit(
         ConnectionEvent.OPEN,
@@ -264,6 +269,7 @@ export default class XHRConnection extends AbstractConnection {
   close() {
     if (this.state === XHRConnection.INIT) {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
       window.setTimeout(() => {
         this.emit(
           ConnectionEvent.ABORT,
