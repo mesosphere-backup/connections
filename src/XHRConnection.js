@@ -36,6 +36,7 @@ export default class XHRConnection extends AbstractConnection {
       },
       responseType = "json",
       timeout = 0,
+      listeners = [],
       open = false
     } = options;
 
@@ -66,6 +67,24 @@ export default class XHRConnection extends AbstractConnection {
         `Invalid timeout. Must be an integer >= 0 and less than Number.MAX_SAFE_INTEGER, is "${timeout}".`
       );
     }
+
+    if(!(listeners instanceof Array)) {
+      throw new Error(`Invalid listeners array type. Has to be an array.`);
+    }
+
+    listeners.forEach(listenerObj => {
+      if(!listenerObj || typeof(listenerObj) !== "object") {
+        throw new Error(`Invalid listener object type "${typeof(listenerObj)}". Has to be an object.`);
+      }
+      if(!ConnectionEvent.includes(listenerObj.type)) {
+        throw new Error(`Unknown ConnectionEvent.type: "${listenerObj.type}". Has to be one of: OPEN, DATA, ERROR, COMPLETE, ABORT`);
+      }
+      if(typeof(listenerObj.callback) !== "function") {
+        throw new Error(`Invalid Callback type "typeof(listenerObj.callback)" for ${listenerObj.type}. Has to be a function.`);
+      }
+
+      this.addListener(listenerObj.type, listenerObj.callback);
+    });
 
     /**
      * @property {string}
