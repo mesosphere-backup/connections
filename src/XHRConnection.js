@@ -40,13 +40,17 @@ export default class XHRConnection extends AbstractConnection {
 
     if (!ALLOWED_METHODS.includes(method)) {
       throw new Error(
-        `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join('", "')}".`
+        `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join(
+          '", "'
+        )}".`
       );
     }
 
     if (!ALLOWED_RESPONSE_TYPES.includes(responseType)) {
       throw new Error(
-        `Invalid response type "${responseType}". Valid reponse types are "${ALLOWED_RESPONSE_TYPES.join('", "')}".`
+        `Invalid response type "${responseType}". Valid reponse types are "${ALLOWED_RESPONSE_TYPES.join(
+          '", "'
+        )}".`
       );
     }
 
@@ -127,6 +131,7 @@ export default class XHRConnection extends AbstractConnection {
 
   /**
    * create, prepare, open and send the xhr request
+   * @return {XHRconnection} - this connection
    */
   open() {
     if (this.state !== XHRConnection.INIT) {
@@ -134,64 +139,78 @@ export default class XHRConnection extends AbstractConnection {
     }
 
     this.xhr.addEventListener("progress", () => {
-      this.emit(
-        ConnectionEvent.DATA,
-        new ConnectionEvent(this, ConnectionEvent.DATA)
-      );
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.DATA,
+          new ConnectionEvent(this, ConnectionEvent.DATA)
+        );
+      }, 0);
     });
 
     this.xhr.addEventListener("load", () => {
       this.state = XHRConnection.CLOSED;
 
       if (this.status < 400) {
-        this.emit(
-          ConnectionEvent.COMPLETE,
-          new ConnectionEvent(this, ConnectionEvent.COMPLETE)
-        );
+        window.setTimeout(() => {
+          this.emit(
+            ConnectionEvent.COMPLETE,
+            new ConnectionEvent(this, ConnectionEvent.COMPLETE)
+          );
+        }, 0);
 
         return;
       }
 
-      this.emit(
-        ConnectionEvent.ERROR,
-        new ConnectionEvent(this, ConnectionEvent.ERROR)
-      );
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.ERROR,
+          new ConnectionEvent(this, ConnectionEvent.ERROR)
+        );
+      }, 0);
     });
 
     this.xhr.addEventListener("abort", () => {
       this.state = XHRConnection.CLOSED;
 
-      this.emit(
-        ConnectionEvent.ABORT,
-        new ConnectionEvent(this, ConnectionEvent.ABORT)
-      );
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.ABORT,
+          new ConnectionEvent(this, ConnectionEvent.ABORT)
+        );
+      }, 0);
     });
 
     this.xhr.addEventListener("error", () => {
       this.state = XHRConnection.CLOSED;
 
-      this.emit(
-        ConnectionEvent.ERROR,
-        new ConnectionEvent(this, ConnectionEvent.ERROR)
-      );
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.ERROR,
+          new ConnectionEvent(this, ConnectionEvent.ERROR)
+        );
+      }, 0);
     });
 
     this.xhr.addEventListener("timeout", () => {
       this.state = XHRConnection.CLOSED;
 
-      this.emit(
-        ConnectionEvent.ERROR,
-        new ConnectionEvent(this, ConnectionEvent.ERROR)
-      );
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.ERROR,
+          new ConnectionEvent(this, ConnectionEvent.ERROR)
+        );
+      }, 0);
     });
 
     this.xhr.open(this.method, this.url);
     this.xhr.timeout = this.timeout;
     this.state = XHRConnection.OPEN;
-    this.emit(
-      ConnectionEvent.OPEN,
-      new ConnectionEvent(this, ConnectionEvent.OPEN)
-    );
+    window.setTimeout(() => {
+      this.emit(
+        ConnectionEvent.OPEN,
+        new ConnectionEvent(this, ConnectionEvent.OPEN)
+      );
+    }, 0);
 
     Object.keys(this.headers).forEach(key => {
       if (this.headers[key] !== undefined && this.headers[key] !== null) {
@@ -201,6 +220,8 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.responseType = this.responseType;
     this.xhr.send(this.body);
+
+    return this;
   }
 
   /**
@@ -209,6 +230,12 @@ export default class XHRConnection extends AbstractConnection {
   close() {
     if (this.state === XHRConnection.INIT) {
       this.state = XHRConnection.CLOSED;
+      window.setTimeout(() => {
+        this.emit(
+          ConnectionEvent.ABORT,
+          new ConnectionEvent(this, ConnectionEvent.ABORT)
+        );
+      }, 0);
     }
 
     if (this.state === XHRConnection.OPEN) {
