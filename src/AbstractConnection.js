@@ -66,6 +66,18 @@ export default class AbstractConnection extends EventEmitter {
     Object.defineProperty(this, "created", { value: Date.now() });
 
     /**
+     * @property {number}
+     * @name AbstractConnection#opened
+     */
+    Object.defineProperty(this, "opened", { value: null, writable: true});
+
+    /**
+     * @property {number}
+     * @name AbstractConnection#closed
+     */
+    Object.defineProperty(this, "closed", { value: null, writable: true });
+
+    /**
      * @property {Symbol}
      * @protected
      * @name AbstractConnection#state
@@ -121,10 +133,14 @@ export default class AbstractConnection extends EventEmitter {
    * - DATA everytime you get data from the server
    * - ERROR, ABORT, _or_ COMPLETE after the Connection is closed
    */
-  open() {}
+  open() {
+    this.opened = Date.now();
+  }
 
   /**
    * Closes the connection
    */
-  close() {}
+  close() {
+    this.closed = Date.now();
+  }
 }
