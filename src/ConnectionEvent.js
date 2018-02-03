@@ -94,4 +94,8 @@ export default class ConnectionEvent {
   static get ABORT() {
     return ABORT;
   }
+
+  static includes(type) {
+    return [OPEN, DATA, ERROR, COMPLETE, ABORT].includes(type);
+  }
 }
