@@ -35,7 +35,9 @@ export default class XHRConnection extends AbstractConnection {
         Accept: "application/json"
       },
       responseType = "json",
-      timeout = 0
+      timeout = 0,
+      listeners = [],
+      open = false
     } = options;
 
     if (!ALLOWED_METHODS.includes(method)) {
@@ -65,6 +67,24 @@ export default class XHRConnection extends AbstractConnection {
         `Invalid timeout. Must be an integer >= 0 and less than Number.MAX_SAFE_INTEGER, is "${timeout}".`
       );
     }
+
+    if(!(listeners instanceof Array)) {
+      throw new Error(`Invalid listeners array type. Has to be an array.`);
+    }
+
+    listeners.forEach(listenerObj => {
+      if(!listenerObj || typeof(listenerObj) !== "object") {
+        throw new Error(`Invalid listener object type "${typeof(listenerObj)}". Has to be an object.`);
+      }
+      if(!ConnectionEvent.includes(listenerObj.type)) {
+        throw new Error(`Unknown ConnectionEvent.type: "${listenerObj.type}". Has to be one of: OPEN, DATA, ERROR, COMPLETE, ABORT`);
+      }
+      if(typeof(listenerObj.callback) !== "function") {
+        throw new Error(`Invalid Callback type "typeof(listenerObj.callback)" for ${listenerObj.type}. Has to be a function.`);
+      }
+
+      this.addListener(listenerObj.type, listenerObj.callback);
+    });
 
     /**
      * @property {string}
@@ -107,6 +127,11 @@ export default class XHRConnection extends AbstractConnection {
      * @name XHRConnection#xhr
      */
     Object.defineProperty(this, "xhr", { value: new XMLHttpRequest() });
+
+    // open immediatly?
+    if(options.open) {
+      this.open();
+    }
   }
 
   get response() {
@@ -131,9 +156,10 @@ export default class XHRConnection extends AbstractConnection {
 
   /**
    * create, prepare, open and send the xhr request
+   * @param {array} - header.
    * @return {XHRconnection} - this connection
    */
-  open() {
+  open(headers) {
     if (this.state !== XHRConnection.INIT) {
       return;
     }
@@ -149,6 +175,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("load", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       if (this.status < 400) {
         window.setTimeout(() => {
@@ -171,6 +198,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("abort", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -182,6 +210,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("error", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -193,6 +222,7 @@ export default class XHRConnection extends AbstractConnection {
 
     this.xhr.addEventListener("timeout", () => {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
 
       window.setTimeout(() => {
         this.emit(
@@ -205,6 +235,7 @@ export default class XHRConnection extends AbstractConnection {
     this.xhr.open(this.method, this.url);
     this.xhr.timeout = this.timeout;
     this.state = XHRConnection.OPEN;
+    this.opened = Date.now();
     window.setTimeout(() => {
       this.emit(
         ConnectionEvent.OPEN,
@@ -218,6 +249,14 @@ export default class XHRConnection extends AbstractConnection {
       }
     });
 
+    if(typeof(headers) === "object") {
+      Object.keys(headers).forEach(key => {
+        if (headers[key] !== undefined && headers[key] !== null) {
+          this.xhr.setRequestHeader(key, headers[key]);
+        }
+      });
+    }
+
     this.xhr.responseType = this.responseType;
     this.xhr.send(this.body);
 
@@ -230,6 +269,7 @@ export default class XHRConnection extends AbstractConnection {
   close() {
     if (this.state === XHRConnection.INIT) {
       this.state = XHRConnection.CLOSED;
+      this.closed = Date.now();
       window.setTimeout(() => {
         this.emit(
           ConnectionEvent.ABORT,
