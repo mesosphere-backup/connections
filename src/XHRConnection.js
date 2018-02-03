@@ -156,9 +156,10 @@ export default class XHRConnection extends AbstractConnection {
 
   /**
    * create, prepare, open and send the xhr request
+   * @param {array} - header.
    * @return {XHRconnection} - this connection
    */
-  open() {
+  open(headers) {
     if (this.state !== XHRConnection.INIT) {
       return;
     }
@@ -242,6 +243,14 @@ export default class XHRConnection extends AbstractConnection {
         this.xhr.setRequestHeader(key, this.headers[key]);
       }
     });
+
+    if(typeof(headers) === "object") {
+      Object.keys(headers).forEach(key => {
+        if (headers[key] !== undefined && headers[key] !== null) {
+          this.xhr.setRequestHeader(key, headers[key]);
+        }
+      });
+    }
 
     this.xhr.responseType = this.responseType;
     this.xhr.send(this.body);
