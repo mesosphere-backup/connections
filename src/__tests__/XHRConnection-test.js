@@ -1,6 +1,8 @@
 import ConnectionEvent from "../ConnectionEvent";
 import XHRConnection from "../XHRConnection";
 
+jest.useFakeTimers();
+
 const url = "http://example.com/url.json";
 const originalXhr = global.XMLHttpRequest;
 
@@ -204,12 +206,17 @@ describe("XHRConnection", () => {
     });
   });
   describe("events", () => {
+    afterEach(()=> {
+      jest.clearAllTimers();
+    });
     it("emits open event on open", () => {
       const req = new XHRConnection(url);
       const cb = jest.fn();
 
       req.on(ConnectionEvent.OPEN, cb);
       req.open();
+
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -221,6 +228,7 @@ describe("XHRConnection", () => {
       req.open();
       req.addListener(ConnectionEvent.ABORT, cb);
       req.xhr.__emit("abort");
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -232,6 +240,7 @@ describe("XHRConnection", () => {
       req.open();
       req.addListener(ConnectionEvent.ERROR, cb);
       req.xhr.__emit("error");
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -244,6 +253,7 @@ describe("XHRConnection", () => {
       req.addListener(ConnectionEvent.ERROR, cb);
       req.xhr.status = 400;
       req.xhr.__emit("load");
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -256,6 +266,7 @@ describe("XHRConnection", () => {
       req.addListener(ConnectionEvent.ERROR, cb);
       req.xhr.status = 500;
       req.xhr.__emit("load");
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
@@ -268,6 +279,7 @@ describe("XHRConnection", () => {
       req.addListener(ConnectionEvent.COMPLETE, cb);
       req.xhr.status = 200;
       req.xhr.__emit("load");
+      jest.runOnlyPendingTimers();
 
       expect(cb).toHaveBeenCalled();
     });
