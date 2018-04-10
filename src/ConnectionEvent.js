@@ -48,8 +48,9 @@ export default class ConnectionEvent {
    * Connection event
    * @param {AbstractConnection} target
    * @param {Symbol} type
+   * @param {Object} [payload] - additional information sent with the event
    */
-  constructor(target, type) {
+  constructor(target, type, payload = null) {
     if (!(target instanceof AbstractConnection)) {
       throw new Error(
         `Invalid target, has to be an instance of Abstractconnection`
@@ -73,6 +74,14 @@ export default class ConnectionEvent {
      * @name ConnectionEvent#type
      */
     Object.defineProperty(this, "type", { value: type });
+
+    /**
+     * @property {Object}
+     * @name ConnectionEvent#payload
+     */
+    Object.defineProperty(this, "payload", {
+      value: payload
+    });
   }
 
   static get OPEN() {
