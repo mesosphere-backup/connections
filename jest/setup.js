@@ -1,4 +1,4 @@
-import EventSource from "@dschmidt/eventsourcemock";
+import EventSource from "eventsourcemock";
 
 Object.defineProperty(window, "EventSource", {
   value: EventSource

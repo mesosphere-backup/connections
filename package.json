@@ -23,7 +23,7 @@
     "babel-cli": "^6.26.0",
     "babel-jest": "^21.2.0",
     "babel-preset-env": "^1.6.1",
-    "@dschmidt/eventsourcemock": "1.1.0",
+    "eventsourcemock": "2.0.0",
     "jest": "^21.2.1",
     "jest-cli": "^21.2.1"
   },

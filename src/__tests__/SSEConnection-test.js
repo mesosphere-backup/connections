@@ -1,4 +1,4 @@
-import { sources } from "@dschmidt/eventsourcemock";
+import { sources } from "eventsourcemock";
 import SSEConnection from "../SSEConnection";
 import ConnectionEvent from "../ConnectionEvent";
 
@@ -53,8 +53,8 @@ describe("Server Sent Event Connection", () => {
       sources[url].emitMessage(msg);
 
       expect(onEventMock).toHaveBeenCalled();
-      expect(onEventMock.mock.calls[0][0].payload).toEqual(msg)
-    })
+      expect(onEventMock.mock.calls[0][0].payload).toEqual(msg);
+    });
     it("emits DATA event on known typed message", () => {
       const onEventMock = jest.fn();
       connection.open();
@@ -63,8 +63,8 @@ describe("Server Sent Event Connection", () => {
       connection.addListener(ConnectionEvent.DATA, onEventMock);
       sources[url].emit("myType", msg);
       expect(onEventMock).toHaveBeenCalledTimes(1);
-      expect(onEventMock.mock.calls[0][0].payload).toEqual(msg)
-    })
+      expect(onEventMock.mock.calls[0][0].payload).toEqual(msg);
+    });
     it("doesnt emit DATA event on unknown typed message", () => {
       const onEventMock = jest.fn();
       connection.open();
@@ -73,7 +73,7 @@ describe("Server Sent Event Connection", () => {
       connection.addListener(ConnectionEvent.DATA, onEventMock);
       sources[url].emit("unknownType", msg);
       expect(onEventMock).not.toHaveBeenCalled();
-    })
+    });
   });
 
   describe("on error", () => {
