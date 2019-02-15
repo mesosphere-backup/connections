@@ -35,7 +35,8 @@ export default class XHRConnection extends AbstractConnection {
         Accept: "application/json"
       },
       responseType = "json",
-      timeout = 0
+      timeout = 0,
+      withCredentials = false
     } = options;
 
     if (!ALLOWED_METHODS.includes(method)) {
@@ -103,6 +104,8 @@ export default class XHRConnection extends AbstractConnection {
      * @name XHRConnection#xhr
      */
     Object.defineProperty(this, "xhr", { value: new XMLHttpRequest() });
+    
+    this.xhr.withCredentials = withCredentials;
   }
 
   get response() {
