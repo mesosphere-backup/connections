@@ -38,7 +38,7 @@ export default class XHRConnection extends AbstractConnection {
       timeout = 0,
       withCredentials = false
     } = options;
-    
+
     if (!ALLOWED_METHODS.includes(method)) {
       throw new Error(
         `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join('", "')}".`
