@@ -35,9 +35,10 @@ export default class XHRConnection extends AbstractConnection {
         Accept: "application/json"
       },
       responseType = "json",
-      timeout = 0
+      timeout = 0,
+      withCredentials = false
     } = options;
-
+    
     if (!ALLOWED_METHODS.includes(method)) {
       throw new Error(
         `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join('", "')}".`
@@ -103,6 +104,8 @@ export default class XHRConnection extends AbstractConnection {
      * @name XHRConnection#xhr
      */
     Object.defineProperty(this, "xhr", { value: new XMLHttpRequest() });
+    
+    this.xhr.withCredentials = withCredentials;
   }
 
   get response() {
@@ -128,17 +131,11 @@ export default class XHRConnection extends AbstractConnection {
   /**
    * create, prepare, open and send the xhr request
    */
-  open(options = {}) {
+  open() {
     if (this.state !== XHRConnection.INIT) {
       return;
     }
-    
-    const {
-      withCredentials = false
-    } = options;
 
-    this.xhr.withCredentials = withCredentials;
-    
     this.xhr.addEventListener("progress", () => {
       this.emit(
         ConnectionEvent.DATA,
