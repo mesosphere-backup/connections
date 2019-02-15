@@ -128,11 +128,17 @@ export default class XHRConnection extends AbstractConnection {
   /**
    * create, prepare, open and send the xhr request
    */
-  open() {
+  open(options = {}) {
     if (this.state !== XHRConnection.INIT) {
       return;
     }
+    
+    const {
+      withCredentials = false
+    } = options;
 
+    this.xhr.withCredentials = withCredentials;
+    
     this.xhr.addEventListener("progress", () => {
       this.emit(
         ConnectionEvent.DATA,
