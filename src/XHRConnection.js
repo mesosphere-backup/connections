@@ -1,7 +1,7 @@
 import AbstractConnection from "./AbstractConnection";
 import ConnectionEvent from "./ConnectionEvent";
 
-const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE"];
+const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const ALLOWED_RESPONSE_TYPES = [
   "arraybuffer",
   "blob",
@@ -41,13 +41,17 @@ export default class XHRConnection extends AbstractConnection {
 
     if (!ALLOWED_METHODS.includes(method)) {
       throw new Error(
-        `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join('", "')}".`
+        `Invalid method "${method}". Valid methods are: "${ALLOWED_METHODS.join(
+          '", "'
+        )}".`
       );
     }
 
     if (!ALLOWED_RESPONSE_TYPES.includes(responseType)) {
       throw new Error(
-        `Invalid response type "${responseType}". Valid reponse types are "${ALLOWED_RESPONSE_TYPES.join('", "')}".`
+        `Invalid response type "${responseType}". Valid reponse types are "${ALLOWED_RESPONSE_TYPES.join(
+          '", "'
+        )}".`
       );
     }
 
@@ -104,7 +108,7 @@ export default class XHRConnection extends AbstractConnection {
      * @name XHRConnection#xhr
      */
     Object.defineProperty(this, "xhr", { value: new XMLHttpRequest() });
-    
+
     this.xhr.withCredentials = withCredentials;
   }
 
