@@ -132,6 +132,18 @@ export default class XHRConnection extends AbstractConnection {
     return this.xhr.status;
   }
 
+  get responseHeaders() {
+    return String(this.xhr.getAllResponseHeaders())
+      .split("\r\n")
+      .map(header => header.split(": "))
+      .reduce((carry, entry) => {
+        if (entry.length === 2) {
+          carry[entry[0]] = entry[1];
+        }
+        return carry;
+      }, {});
+  }
+
   /**
    * create, prepare, open and send the xhr request
    */
