@@ -290,4 +290,24 @@ describe("XHRConnection", () => {
       expect(req.response).toEqual(json);
     });
   });
+
+  describe("responseHeaders", () => {
+    it("returns empty object with no headers", () => {
+      const req = new XHRConnection(url);
+
+      req.xhr.getAllResponseHeaders = jest.fn().mockReturnValue("");
+      expect(req.responseHeaders).toEqual({});
+    });
+
+    it("returns array of headers", () => {
+      const req = new XHRConnection(url);
+      req.xhr.getAllResponseHeaders = jest
+        .fn()
+        .mockReturnValue("content-type: application/foo\r\naccept: defeat\r\n");
+      expect(req.responseHeaders).toEqual({
+        "content-type": "application/foo",
+        accept: "defeat"
+      });
+    });
+  });
 });
